@@ -1,0 +1,156 @@
+Read a video file and compress the frames using DCT compression and write it to another video file
+
+Code:
+
+% Read the original video
+videoReader = VideoReader('coke.mp4');
+numFrames = videoReader.NumFrames;
+% Create a VideoWriter object to write the output video
+videoWriter = VideoWriter('compressed.mp4', 'MPEG-4');
+open(videoWriter);
+% Compression quality (adjust according to your preference)
+compressionQuality = 50;
+% Iterate through each frame of the original video
+for i = 1:numFrames
+    % Read the current frame
+    frame = read(videoReader, i);
+    % Convert frame to grayscale if it's RGB
+    if size(frame, 3) == 3
+        frame = rgb2gray(frame);
+    end
+    % Apply DCT compression
+    compressedFrame = dct2(frame);
+    % Keep only high frequency coefficients for compression
+    compressedFrame(compressedFrame < compressionQuality) = 0;
+    % Inverse DCT to reconstruct compressed frame
+    compressedFrame = idct2(compressedFrame);
+    % Write the compressed frame to the output video
+    writeVideo(videoWriter, uint8(compressedFrame));
+end
+% Close the VideoWriter object
+close(videoWriter);
+implay('compressed.mp4');
+
+
+
+
+
+
+
+EXPERIMENT 5:
+
+Write a program in MATLAB to perform Huffman coding.
+
+Code:
+
+symbols = 1:6;
+p = [.5 .125 .125 .125 .0625 .0625];
+bps = ceil(log2(max(symbols)));      % Bits per symbol
+
+dict = huffmandict(symbols,p);
+inputSig = randsrc(100,1,[symbols;p]);
+code = huffmanenco(inputSig,dict);
+sig = huffmandeco(code,dict);
+isequal(inputSig,sig)
+
+binarySig = int2bit(inputSig,bps);
+seqLen = numel(binarySig);
+
+binaryComp = int2bit(code,bps);
+encodedLen = numel(binaryComp);
+
+
+
+
+
+
+
+Write a program to compress the video using H.264.
+
+Code:
+
+%% Video Compression using H.264 with Quality Parameter
+
+% Define input and output video files
+inputFile = 'coke.mp4';
+outputFile = 'compressedd_video.mp4';
+
+% Define quality (0-100, higher is better)
+quality = 2; % Adjust this value according to your requirements
+
+% Read the input video
+videoObj = VideoReader(inputFile);
+
+% Get video properties
+numFrames = videoObj.NumberOfFrames;
+frameRate = videoObj.FrameRate;
+
+% Create a VideoWriter object for compressed video
+compressedVideoObj = VideoWriter(outputFile, 'MPEG-4');
+compressedVideoObj.FrameRate = frameRate;
+compressedVideoObj.Quality = quality; % Set quality
+open(compressedVideoObj);
+
+% Loop through each frame and compress using H.264
+for frameIdx = 1:numFrames
+    % Read frame
+    frame = read(videoObj, frameIdx);
+    
+    % Perform compression (replace this with your H.264 compression method)
+    % For demonstration purposes, let's just write the frame as is
+    writeVideo(compressedVideoObj, frame);
+    
+    % Display progress
+    fprintf('Compressing frame %d/%d\n', frameIdx, numFrames);
+end
+
+% Close the compressed video file
+close(compressedVideoObj);
+
+% Display completion message
+fprintf('Video compression complete. Compressed video saved as %s\n', outputFile);
+implay('compressedd_video.mp4');
+
+
+
+
+
+Read, write and display video using computer vision toolbox, also detect the face of object using vision.CascadeObjectDetector.
+
+Code:
+
+% Read the video
+videoReader = VideoReader('face.mp4');
+% Create a video player to display the video
+videoPlayer = vision.VideoPlayer;
+% Create a video writer to save the modified video
+outputVideoFile = 'output.mp4';
+videoWriter = VideoWriter(outputVideoFile, 'MPEG-4');
+open(videoWriter);
+% Create a face detector object
+faceDetector = vision.CascadeObjectDetector();
+% Process each frame of the video
+while hasFrame(videoReader)
+    % Read the current frame
+    frame = readFrame(videoReader);
+    % Detect faces in the current frame
+    bbox = step(faceDetector, frame);
+    % Draw rectangles around the detected faces
+    if ~isempty(bbox)
+        % Draw rectangles around the detected faces
+        annotatedFrame = insertObjectAnnotation(frame, 'rectangle', bbox, 'Face');
+    else
+        annotatedFrame = frame;
+    end
+    % Display the annotated frame
+    step(videoPlayer, annotatedFrame);
+    
+    % Write the annotated frame to the output video
+    writeVideo(videoWriter, annotatedFrame);
+end
+% Release objects
+release(videoReader);
+release(videoPlayer);
+release(videoWriter);
+
+
