@@ -1,0 +1,135 @@
+Read the video and extract frames. Play the video using two different frame rates. Display the first middle and last frame.
+
+Code:
+
+clc
+clear all
+v = VideoReader("coke.mp4");     % Read the video file
+frames = v.NumberOfFrames;       % Extract the Number of frames
+implay('coke.mp4',30);           % play the video at 30fps
+implay('coke.mp4',60);           % play the video at 60fps
+first = read(v,1);               % Read the first frame
+subplot(1,3,1);
+imshow(first);
+title('First Frame');
+middle = read(v,(frames+1)/2);   % Read the middle frame
+subplot(1,3,2);
+imshow(middle);
+title('Middle Frame');
+last = read(v,frames);           % Read the last frame
+subplot(1,3,3);
+imshow(last);
+title('Last Frame');
+
+
+
+Take a video and change its colour space from RGB to YCrCb. Save the video (write onto another variable). Take the original video, change its quality, and save it as a new movie.
+
+Code:
+
+% Read the video file
+videoReader = VideoReader('coke.mp4');
+
+% Create a VideoWriter object to write the output video
+videoWriter = VideoWriter('coki.mp4', 'MPEG-4');
+open(videoWriter);
+
+% Iterate through each frame of the video
+while hasFrame(videoReader)
+    % Read the current frame
+    frameRGB = readFrame(videoReader);
+    
+    % Convert the current frame from RGB to YCbCr
+    frameYCbCr = rgb2ycbcr(frameRGB);
+    
+    % Write the converted frame to the output video
+    writeVideo(videoWriter, frameYCbCr);
+end
+% Close the VideoWriter object
+close(videoWriter);
+disp('YCbCr video created!');
+
+ 
+
+% Changing the video quality
+% Read the original video
+videoReader = VideoReader('coke.mp4');
+
+% Create a VideoWriter object to write the output video
+videoWriter = VideoWriter('cokii.mp4', 'MPEG-4');
+videoWriter.Quality = 50; % Adjust the quality (0-100, higher is better but larger file size)
+open(videoWriter);
+
+% Iterate through each frame of the original video
+while hasFrame(videoReader)
+    % Read the current frame
+    frame = readFrame(videoReader);
+    
+    % Write the frame to the output video
+    writeVideo(videoWriter, frame);
+end
+
+% Close the VideoWriter object
+close(videoWriter);
+implay('cokii.mp4');
+
+
+
+
+
+Write a program in MATLAB to
+• Read a video 
+• Add noise to video file 
+• Calculate the Peak Signal to noise ratio
+
+Code:
+
+% Read the original video
+videoReader = VideoReader('coke.mp4');
+
+numFrames = videoReader.NumFrames;
+
+% Create a VideoWriter object to write the output video
+videoWriter = VideoWriter('noisy.mp4', 'MPEG-4');
+open(videoWriter);
+
+% Parameters for noise generation
+noiseLevel = 0.2; % Adjust the noise level according to your preference
+
+% Initialize PSNR
+psnrValues = zeros(numFrames, 1);
+
+% Iterate through each frame of the original video
+for i = 1:numFrames
+    % Read the current frame
+    frame = read(videoReader, i);
+    
+    % Add noise to the frame
+    noisyFrame = imnoise(frame, 'gaussian', 0, noiseLevel);
+    
+    % Calculate PSNR between original and noisy frames
+    psnrValues(i) = psnr(frame, noisyFrame);
+    
+    % Write the noisy frame to the output video
+    writeVideo(videoWriter, noisyFrame);
+end
+
+% Close the VideoWriter object
+close(videoWriter);
+
+% Play the noisy Video file
+implay('noisy.mp4')
+
+% Calculate the average PSNR
+averagePSNR = mean(psnrValues);
+
+% Display the average PSNR
+disp(['Average PSNR: ', num2str(averagePSNR)]);
+
+
+
+
+
+
+
+
